@@ -7,8 +7,10 @@ import Home from "./pages/Home";
 import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
-import { toast } from "react-toastify"; // Import only toast (since ToastContainer was moved)
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -54,7 +56,8 @@ function App() {
   return (
     <Router>
       <Navbar cartCount={cart.length} />
-      <div style={{ padding: "20px" }}>
+
+      <div className="p-5">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products addToCart={addToCart} />} />
@@ -69,9 +72,12 @@ function App() {
             }
           />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </div>
+
       <Footer />
+      <ToastContainer />
     </Router>
   );
 }

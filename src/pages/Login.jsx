@@ -1,52 +1,60 @@
 import React, { useState } from "react";
+import { loginUser } from "../services/api";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    alert("Login request will be connected to backend");
+    try {
+      const response = await loginUser({ email, password });
+      toast.success("Login successful!");
+      localStorage.setItem("token", response.data.token);
+      navigate("/products");
+    } catch (error) {
+      toast.error("Login failed");
+    }
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>Login</h2>
-      <form onSubmit={handleSubmit} style={styles.form}>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white p-6 rounded-lg shadow-lg w-80"
+      >
+        <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
+
         <input
           type="email"
           placeholder="Email"
-          style={styles.input}
+          className="border w-full p-2 mb-3 rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+
         <input
           type="password"
           placeholder="Password"
-          style={styles.input}
+          className="border w-full p-2 mb-3 rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit" style={styles.button}>Login</button>
+
+        <button
+          type="submit"
+          className="bg-primary text-white w-full py-2 rounded-md"
+        >
+          Login
+        </button>
       </form>
     </div>
   );
-}
-
-const styles = {
-  container: {
-    textAlign: "center",
-    maxWidth: "350px",
-    margin: "auto",
-    background: "white",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-  },
-  title: { marginBottom: "15px", color: "#28a745" },
-  form: { display: "flex", flexDirection: "column", gap: "10px" },
-  input: { padding: "10px", borderRadius: "6px", border: "1px solid #ccc" },
-  button: { background: "#28a745", color: "white", padding: "10px", borderRadius: "6px", cursor: "pointer" },
 };
+
+export default Login;
