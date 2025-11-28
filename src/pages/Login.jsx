@@ -14,7 +14,7 @@ const Login = () => {
     try {
       const response = await loginUser({ email, password });
 
-      // 🔥 Save token & user info
+      // Save token & user info
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("username", response.data.user.name || "User");

@@ -4,7 +4,7 @@ import products from "../data/products";
 export default function Products({ addToCart }) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 🚀 Add to cart (use parent addToCart properly)
+  //  Add to cart (use parent addToCart properly)
   const handleAdd = (product) => {
   addToCart(product); // only call this
 };

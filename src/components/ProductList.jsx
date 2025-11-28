@@ -40,7 +40,7 @@ export default function Products() {
     <div style={styles.container}>
       <h2 style={styles.title}>🩺 Medical Products</h2>
 
-      {/* 🔍 Search Bar */}
+      {/*  Search Bar */}
       <input
         type="text"
         placeholder="Search products..."
@@ -60,7 +60,7 @@ export default function Products() {
               <p style={styles.price}>${product.price}</p>
               <p style={styles.stock}>Stock: {product.stock}</p>
 
-              {/* 🟢 UPDATED Add To Cart */}
+              {/*  UPDATED Add To Cart */}
               <button style={styles.button} onClick={() => addToCart(product)}>
                 Add to Cart
               </button>
@@ -72,7 +72,7 @@ export default function Products() {
   );
 }
 
-// 🎨 Styles
+//  Styles
 const styles = {
   container: { textAlign: "center", padding: "20px" },
   title: { fontSize: "28px", marginBottom: "20px", color: "#28a745" },
