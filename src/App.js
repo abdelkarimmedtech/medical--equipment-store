@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Products from "./pages/Products";
+import Products from "./pages/products"; // 👈 matches your current filename
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -13,21 +13,21 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-  // Load cart from localStorage
+  // Load cart from localStorage once at startup
   const [cart, setCart] = useState(() => {
     return JSON.parse(localStorage.getItem("cart")) || [];
   });
 
-  // Navbar counter state
+  // Navbar counter
   const [cartCount, setCartCount] = useState(0);
 
-  // Sync cart and update counter
+  // Keep localStorage + counter in sync whenever cart changes
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
     setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
   }, [cart]);
 
-  // Add item to cart
+  // ✅ Add item to cart (fixed)
   const addToCart = (product) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
@@ -43,14 +43,16 @@ function App() {
         updatedCart = [...prevCart, { ...product, quantity: 1 }];
       }
 
+      // instant navbar update
       setCartCount(updatedCart.reduce((sum, item) => sum + item.quantity, 0));
+
       toast.success(`${product.name} added to cart!`, { autoClose: 1500 });
 
       return updatedCart;
     });
   };
 
-  // Update quantity
+  // Update quantity in cart
   const updateCartItem = (id, change) => {
     setCart((prevCart) =>
       prevCart
@@ -63,12 +65,12 @@ function App() {
     );
   };
 
-  // Remove item
+  // Remove item from cart
   const removeItem = (id) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
 
-  // Clear cart
+  // Clear cart (used on purchase)
   const clearCart = () => {
     setCart([]);
   };

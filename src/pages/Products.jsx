@@ -4,24 +4,10 @@ import products from "../data/products";
 export default function Products({ addToCart }) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 🔥 Add to cart with localStorage
+  // 🚀 Add to cart (use parent addToCart properly)
   const handleAdd = (product) => {
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existing = cart.find((item) => item.id === product.id);
-
-    if (existing) {
-      cart = cart.map((item) =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      );
-    } else {
-      cart.push({ ...product, quantity: 1 });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    alert("🛒 Product added to cart!");
-  };
+  addToCart(product); // only call this
+};
 
   // 🔎 Search filter
   const filteredProducts = products.filter(
@@ -58,7 +44,6 @@ export default function Products({ addToCart }) {
               <p style={styles.price}>${product.price}</p>
               <p style={styles.stock}>Stock: {product.stock}</p>
 
-              {/* GREEN FIX 🚀 */}
               <button style={styles.button} onClick={() => handleAdd(product)}>
                 Add to Cart
               </button>
