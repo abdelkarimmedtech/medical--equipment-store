@@ -1,16 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Products from "./pages/products"; // 👈 matches your current filename
+import Products from "./pages/products";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import AdminDashboard from "./pages/AdminDashboard"; // 🆕 Import admin page
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+// 🛡️ Protect admin route
+const PrivateRoute = ({ children }) => {
+  const isAdmin = localStorage.getItem("role") === "admin";
+  return isAdmin ? children : <Navigate to="/login" replace />;
+};
 
 function App() {
   // Load cart from localStorage once at startup
@@ -27,7 +39,7 @@ function App() {
     setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
   }, [cart]);
 
-  // ✅ Add item to cart (fixed)
+  // ➕ Add item to cart
   const addToCart = (product) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
@@ -43,16 +55,15 @@ function App() {
         updatedCart = [...prevCart, { ...product, quantity: 1 }];
       }
 
-      // instant navbar update
+      // Instant navbar update
       setCartCount(updatedCart.reduce((sum, item) => sum + item.quantity, 0));
 
       toast.success(`${product.name} added to cart!`, { autoClose: 1500 });
-
       return updatedCart;
     });
   };
 
-  // Update quantity in cart
+  // 🆙 Update quantity in cart
   const updateCartItem = (id, change) => {
     setCart((prevCart) =>
       prevCart
@@ -65,12 +76,12 @@ function App() {
     );
   };
 
-  // Remove item from cart
+  // ❌ Remove item
   const removeItem = (id) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
   };
 
-  // Clear cart (used on purchase)
+  // 🧹 Clear cart on purchase
   const clearCart = () => {
     setCart([]);
   };
@@ -96,6 +107,16 @@ function App() {
           />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+
+          {/* 🔐 Protected Admin Route */}
+          <Route
+            path="/admin"
+            element={
+              <PrivateRoute>
+                <AdminDashboard />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </div>
 
