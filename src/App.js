@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -7,14 +8,12 @@ import Products from "./pages/Products";
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 
-// 🟢 Import Toastify
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify"; // Import only toast (since ToastContainer was moved)
 
 function App() {
   const [cart, setCart] = useState([]);
 
-  // Add to cart with Toast
+  // Add to cart with toast notification
   const addToCart = (product) => {
     const existingItem = cart.find((item) => item.id === product.id);
 
@@ -36,7 +35,6 @@ function App() {
     });
   };
 
-  // Update quantity
   const updateCartItem = (id, change) => {
     setCart(
       cart
@@ -49,7 +47,6 @@ function App() {
     );
   };
 
-  // Remove item from cart
   const removeItem = (id) => {
     setCart(cart.filter((item) => item.id !== id));
   };
@@ -57,7 +54,6 @@ function App() {
   return (
     <Router>
       <Navbar cartCount={cart.length} />
-
       <div style={{ padding: "20px" }}>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -75,11 +71,7 @@ function App() {
           <Route path="/login" element={<Login />} />
         </Routes>
       </div>
-
       <Footer />
-
-      {/* Toast container must be here */}
-      <ToastContainer />
     </Router>
   );
 }
