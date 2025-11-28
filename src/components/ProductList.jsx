@@ -1,10 +1,36 @@
 import React, { useState } from "react";
 import products from "../data/products";
+import ProductCard from "./ProductCard";
 
-function Products({ addToCart }) {
+{filteredProducts.map((product) => (
+  <ProductCard key={product.id} product={product} addToCart={addToCart} />
+))}
+
+export default function Products() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter products based on the search input
+  // 🔹 Function to add product to cart & save in localStorage
+  const addToCart = (product) => {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    // Check if product already exists
+    const existing = cart.find((item) => item.id === product.id);
+
+    if (existing) {
+      cart = cart.map((item) =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      cart.push({ ...product, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    alert("🛒 Product added to cart!");
+  };
+
+  // Filter based on search input
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -14,7 +40,7 @@ function Products({ addToCart }) {
     <div style={styles.container}>
       <h2 style={styles.title}>🩺 Medical Products</h2>
 
-      {/*  Search Bar */}
+      {/* 🔍 Search Bar */}
       <input
         type="text"
         placeholder="Search products..."
@@ -33,6 +59,8 @@ function Products({ addToCart }) {
               <p style={styles.description}>{product.description}</p>
               <p style={styles.price}>${product.price}</p>
               <p style={styles.stock}>Stock: {product.stock}</p>
+
+              {/* 🟢 UPDATED Add To Cart */}
               <button style={styles.button} onClick={() => addToCart(product)}>
                 Add to Cart
               </button>
@@ -55,7 +83,7 @@ const styles = {
     fontSize: "16px",
     borderRadius: "8px",
     border: "1px solid #ccc",
-    marginBottom: "20px"
+    marginBottom: "20px",
   },
   grid: {
     display: "grid",
@@ -88,5 +116,3 @@ const styles = {
     transition: "0.3s",
   },
 };
-
-export default Products;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
@@ -13,33 +13,47 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function App() {
-  const [cart, setCart] = useState([]);
+  // Load cart from localStorage
+  const [cart, setCart] = useState(() => {
+    return JSON.parse(localStorage.getItem("cart")) || [];
+  });
 
-  // Add to cart with toast notification
+  // Navbar counter state
+  const [cartCount, setCartCount] = useState(0);
+
+  // Sync cart and update counter
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
+  }, [cart]);
+
+  // Add item to cart
   const addToCart = (product) => {
-    const existingItem = cart.find((item) => item.id === product.id);
+    setCart((prevCart) => {
+      const existingItem = prevCart.find((item) => item.id === product.id);
+      let updatedCart;
 
-    if (existingItem) {
-      setCart(
-        cart.map((item) =>
+      if (existingItem) {
+        updatedCart = prevCart.map((item) =>
           item.id === product.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
-        )
-      );
-    } else {
-      setCart([...cart, { ...product, quantity: 1 }]);
-    }
+        );
+      } else {
+        updatedCart = [...prevCart, { ...product, quantity: 1 }];
+      }
 
-    toast.success(`${product.name} added to cart!`, {
-      position: "top-right",
-      autoClose: 1500,
+      setCartCount(updatedCart.reduce((sum, item) => sum + item.quantity, 0));
+      toast.success(`${product.name} added to cart!`, { autoClose: 1500 });
+
+      return updatedCart;
     });
   };
 
+  // Update quantity
   const updateCartItem = (id, change) => {
-    setCart(
-      cart
+    setCart((prevCart) =>
+      prevCart
         .map((item) =>
           item.id === id
             ? { ...item, quantity: Math.max(1, item.quantity + change) }
@@ -49,13 +63,19 @@ function App() {
     );
   };
 
+  // Remove item
   const removeItem = (id) => {
-    setCart(cart.filter((item) => item.id !== id));
+    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+  };
+
+  // Clear cart
+  const clearCart = () => {
+    setCart([]);
   };
 
   return (
     <Router>
-      <Navbar cartCount={cart.length} />
+      <Navbar cartCount={cartCount} />
 
       <div className="p-5">
         <Routes>
@@ -68,6 +88,7 @@ function App() {
                 cartItems={cart}
                 updateCartItem={updateCartItem}
                 removeItem={removeItem}
+                clearCart={clearCart}
               />
             }
           />

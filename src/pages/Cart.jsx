@@ -1,11 +1,29 @@
 import React from "react";
+import { toast } from "react-toastify";
 
-export default function Cart({ cartItems, updateCartItem, removeItem }) {
-  const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+export default function Cart({ cartItems, updateCartItem, removeItem, clearCart }) {
+  const total = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const handlePurchase = () => {
+    if (cartItems.length === 0) {
+      toast.info("🛒 Your cart is empty!", { position: "top-center", autoClose: 1500 });
+      return;
+    }
+
+    toast.success("🎉 Thank you for your purchase!", {
+      position: "top-center",
+      autoClose: 2000,
+    });
+
+    clearCart(); // instantly updates navbar
+  };
 
   return (
     <div style={{ padding: "20px", maxWidth: "600px", margin: "auto" }}>
-      <h2 style={{ marginBottom: "20px" }}>🛒 Your Cart</h2>
+      <h2>🛒 Your Cart</h2>
 
       {cartItems.length === 0 ? (
         <p>Your cart is empty</p>
@@ -26,7 +44,11 @@ export default function Cart({ cartItems, updateCartItem, removeItem }) {
               </div>
             </div>
           ))}
-          <h3 style={{ marginTop: "20px" }}>💵 Total: ${total.toFixed(2)}</h3>
+
+          <h3>💵 Total: ${total.toFixed(2)}</h3>
+          <button style={styles.purchase} onClick={handlePurchase}>
+            ✔ Purchase
+          </button>
         </>
       )}
     </div>
@@ -37,17 +59,33 @@ const styles = {
   cartItem: {
     display: "flex",
     justifyContent: "space-between",
-    alignItems: "center",
     background: "white",
     padding: "15px",
     borderRadius: "8px",
-    boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
     marginBottom: "10px",
   },
-
-  actions: { display: "flex", gap: "10px", alignItems: "center" },
-
-  qty: { padding: "5px 10px", border: "1px solid #ddd", borderRadius: "5px" },
-
-  remove: { background: "red", color: "white", border: "none", padding: "5px 10px", borderRadius: "5px" },
+  actions: {
+    display: "flex",
+    gap: "10px",
+  },
+  qty: {
+    border: "1px solid #ddd",
+    padding: "5px 10px",
+    borderRadius: "5px",
+  },
+  remove: {
+    background: "red",
+    color: "white",
+    border: "none",
+    padding: "5px",
+    borderRadius: "5px",
+  },
+  purchase: {
+    marginTop: "10px",
+    background: "green",
+    color: "white",
+    border: "none",
+    padding: "10px 20px",
+    borderRadius: "8px",
+  },
 };
