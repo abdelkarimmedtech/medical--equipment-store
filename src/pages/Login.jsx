@@ -10,13 +10,26 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
       const response = await loginUser({ email, password });
-      toast.success("Login successful!");
+
+      // 🔥 Save token & user info
       localStorage.setItem("token", response.data.token);
-      navigate("/products");
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("username", response.data.user.name || "User");
+      localStorage.setItem("role", response.data.user.role || "user");
+
+      toast.success("🎉 Login successful!", { autoClose: 1500 });
+
+      // 🎯 Redirect based on role
+      if (response.data.user.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/products");
+      }
     } catch (error) {
-      toast.error("Login failed");
+      toast.error("❌ Login failed! Check your credentials.", { autoClose: 1500 });
     }
   };
 
