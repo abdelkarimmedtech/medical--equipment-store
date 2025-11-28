@@ -14,7 +14,7 @@ function Products({ addToCart }) {
     <div style={styles.container}>
       <h2 style={styles.title}>🩺 Medical Products</h2>
 
-      {/* 🔍 Search Bar */}
+      {/*  Search Bar */}
       <input
         type="text"
         placeholder="Search products..."
