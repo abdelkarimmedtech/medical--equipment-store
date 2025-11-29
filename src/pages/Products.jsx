@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { getProducts } from "../services/api"; // Import API request
+import { getProducts } from "../services/api";
 import { toast } from "react-toastify";
+import "./Products.css";
 
 export default function Products({ addToCart }) {
-  const [products, setProducts] = useState([]); // Products from backend
+  const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true); // To manage fetching
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch products on mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await getProducts(); // Call the API
-        setProducts(response.data); // Store data
+        const response = await getProducts();
+        setProducts(response.data);
         setLoading(false);
       } catch (err) {
         setError("Failed to fetch products");
-        toast.error("❌ Failed to fetch products");
+        toast.error("Failed to fetch products");
         setLoading(false);
       }
     };
@@ -26,98 +27,104 @@ export default function Products({ addToCart }) {
   }, []);
 
   const handleAdd = (product) => {
-    addToCart(product); // Pass product to parent
+    addToCart(product);
   };
 
-  // Filter products (search)
-  const filteredProducts = products.filter((product) =>
-    `${product.name} ${product.description}`
+  const filteredProducts = products.filter((product) => {
+    const matchesSearch = `${product.name} ${product.description}`
       .toLowerCase()
-      .includes(searchTerm.toLowerCase())
-  );
+      .includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategory === "All" || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
 
-  if (loading) return <p style={styles.loading}>Loading products...</p>;
-  if (error) return <p style={styles.error}>Error: {error}</p>;
+  const categories = ["All", ...new Set(products.map((p) => p.category))];
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>🩺 Medical Products</h2>
+    <div className="products-page">
+      {/* Header */}
+      <div className="products-header">
+        <h1>Medical Products</h1>
+        <p>Discover our wide range of quality medical equipment</p>
+      </div>
 
-      {/* Search bar */}
-      <input
-        type="text"
-        placeholder="Search products..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={styles.searchInput}
-      />
+      {/* Filters */}
+      <div className="products-filters">
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search products by name or description..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <span className="search-icon">🔍</span>
+        </div>
 
-      <div style={styles.grid}>
-        {filteredProducts.length === 0 ? (
-          <p>No products found.</p>
-        ) : (
-          filteredProducts.map((product) => (
-            <div
-              key={product._id}
-              style={styles.card}
-              onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+        <div className="category-filters">
+          {categories.map((category) => (
+            <button
+              key={category}
+              className={`filter-btn ${selectedCategory === category ? "active" : ""}`}
+              onClick={() => setSelectedCategory(category)}
             >
-              <h3 style={styles.productName}>{product.name}</h3>
-              <p style={styles.description}>{product.description}</p>
-              <p style={styles.price}>${product.price}</p>
-              <p style={styles.stock}>Stock: {product.stock}</p>
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
 
-              <button style={styles.button} onClick={() => handleAdd(product)}>
-                Add to Cart
-              </button>
-            </div>
-          ))
+      {/* Products Grid */}
+      <div className="products-container">
+        {loading && <div className="loading">Loading products...</div>}
+        {error && <div className="error">Error: {error}</div>}
+
+        {!loading && !error && filteredProducts.length === 0 && (
+          <div className="no-products">
+            <p>No products found.</p>
+            <small>Try adjusting your search or filter criteria</small>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <div className="products-grid">
+            {filteredProducts.map((product) => (
+              <div key={product._id} className="product-card">
+                <div className="product-image">
+                  <img src={product.image} alt={product.name} />
+                  {product.stock === 0 && (
+                    <div className="out-of-stock-badge">Out of Stock</div>
+                  )}
+                </div>
+
+                <div className="product-content">
+                  <div className="product-category">{product.category}</div>
+                  <h3 className="product-name">{product.name}</h3>
+                  <p className="product-description">{product.description}</p>
+
+                  <div className="product-footer">
+                    <div className="product-price">${parseFloat(product.price).toFixed(2)}</div>
+                    <div className="product-stock">
+                      Stock: <span className={product.stock > 0 ? "in-stock" : "out-of-stock"}>
+                        {product.stock}
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    className={`add-to-cart-btn ${product.stock === 0 ? "disabled" : ""}`}
+                    onClick={() => handleAdd(product)}
+                    disabled={product.stock === 0}
+                  >
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
   );
 }
-
-const styles = {
-  container: { textAlign: "center", padding: "20px" },
-  title: { fontSize: "28px", marginBottom: "20px", color: "#28a745" },
-  searchInput: {
-    padding: "10px",
-    width: "50%",
-    maxWidth: "350px",
-    fontSize: "16px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    marginBottom: "20px",
-  },
-  loading: { textAlign: "center", fontSize: "18px", color: "orange" },
-  error: { textAlign: "center", fontSize: "18px", color: "red" },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: "25px",
-  },
-  card: {
-    background: "white",
-    padding: "20px",
-    borderRadius: "10px",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    transition: "transform 0.25s ease",
-  },
-  productName: { fontSize: "20px", fontWeight: "bold" },
-  description: { color: "#555" },
-  price: { fontSize: "18px", fontWeight: "bold", color: "#007bff" },
-  stock: { fontSize: "14px", color: "#555" },
-  button: {
-    marginTop: "10px",
-    backgroundColor: "#28a745",
-    color: "white",
-    border: "none",
-    padding: "10px 15px",
-    borderRadius: "6px",
-    cursor: "pointer",
-    width: "100%",
-    fontSize: "16px",
-  },
-};
