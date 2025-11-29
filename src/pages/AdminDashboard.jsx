@@ -147,7 +147,7 @@ export default function AdminDashboard() {
                 <div className="form-group">
                   <label>Price</label>
                   <div className="input-with-prefix">
-                    <span>$</span>
+                    <span>TND</span>
                     <input 
                       type="number" 
                       step="0.01"
@@ -254,7 +254,7 @@ export default function AdminDashboard() {
                             <div className="form-group">
                               <label>Price</label>
                               <div className="input-with-prefix">
-                                <span>$</span>
+                                <span>TND</span>
                                 <input 
                                   type="number" 
                                   step="0.01"
@@ -318,7 +318,7 @@ export default function AdminDashboard() {
                         </td>
                         <td className="name-cell">{product.name}</td>
                         <td className="description-cell">{product.description}</td>
-                        <td className="price-cell">${parseFloat(product.price).toFixed(2)}</td>
+                        <td className="price-cell">TND {parseFloat(product.price).toFixed(2)}</td>
                         <td className="stock-cell">
                           <span className={`stock-badge ${product.stock > 10 ? 'in-stock' : product.stock > 0 ? 'low-stock' : 'out-of-stock'}`}>
                             {product.stock}

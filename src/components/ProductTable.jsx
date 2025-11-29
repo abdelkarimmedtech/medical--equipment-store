@@ -17,7 +17,7 @@ export default function ProductTable({ products, onEdit, onDelete }) {
           <tr key={product.id}>
             <td>{product.id}</td>
             <td>{product.name}</td>
-            <td>${product.price}</td>
+            <td>TND{product.price}</td>
             <td>{product.stock}</td>
             <td>
               <button style={styles.editBtn} onClick={() => onEdit(product)}>Edit</button>

@@ -104,7 +104,7 @@ export default function Products({ addToCart }) {
                   <p className="product-description">{product.description}</p>
 
                   <div className="product-footer">
-                    <div className="product-price">${parseFloat(product.price).toFixed(2)}</div>
+                    <div className="product-price">TND {parseFloat(product.price).toFixed(2)}</div>
                     <div className="product-stock">
                       Stock: <span className={product.stock > 0 ? "in-stock" : "out-of-stock"}>
                         {product.stock}

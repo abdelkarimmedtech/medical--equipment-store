@@ -57,7 +57,7 @@ export default function Products() {
             <div key={product.id} style={styles.card}>
               <h3 style={styles.productName}>{product.name}</h3>
               <p style={styles.description}>{product.description}</p>
-              <p style={styles.price}>${product.price}</p>
+              <p style={styles.price}>TND{product.price}</p>
               <p style={styles.stock}>Stock: {product.stock}</p>
 
               {/*  UPDATED Add To Cart */}

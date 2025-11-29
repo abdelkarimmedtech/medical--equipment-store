@@ -43,7 +43,7 @@ export default function Cart({ cartItems, updateCartItem, removeItem, clearCart 
             <div key={item._id} style={styles.cartItem}>
               <div>
                 <h4>{item.name}</h4>
-                <p>${item.price}</p>
+                <p>TND {item.price}</p>
               </div>
 
               <div style={styles.actions}>
@@ -60,7 +60,7 @@ export default function Cart({ cartItems, updateCartItem, removeItem, clearCart 
             </div>
           ))}
 
-          <h3 style={{ marginTop: "20px" }}>💵 Total: ${total.toFixed(2)}</h3>
+          <h3 style={{ marginTop: "20px" }}>💵 Total: TND {total.toFixed(2)}</h3>
 
           <button style={styles.purchase} onClick={handlePurchase}>
             ✔ Purchase
