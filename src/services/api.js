@@ -28,6 +28,8 @@ export const getProducts = () => API.get("/products");
 
 // 🔸 Add new product (admin only)
 export const addProduct = (productData) => API.post("/products", productData);
+ 
+export const updateProduct = (id, productData) => API.put(`/products/${id}`, productData);
 
 // 🔸 Delete product
 export const deleteProduct = (id) => API.delete(`/products/${id}`);
