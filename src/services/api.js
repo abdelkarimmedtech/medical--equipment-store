@@ -1,28 +1,35 @@
 import axios from "axios";
 
-// Create an axios instance
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // 🔗 Backend base URL
+  baseURL: "http://localhost:5000/api", // Backend server URL
 });
 
-// 🔒 Attach token to all requests if exists
-API.interceptors.request.use((req) => {
+// 🔹 Automatically attach token to every request if logged in
+API.interceptors.request.use((config) => {
   const token = localStorage.getItem("token");
   if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`;
   }
-  return req;
+  return config;
 });
 
-// ⬇️ API Methods
+// =================== AUTH APIs =================== //
 
-// 🆕 Register
-export const registerUser = (data) => API.post("/users/register", data);
+// 🔸 Register user (now includes name 👌)
+export const registerUser = (userData) => API.post("/users/register", userData);
 
-// 🔑 Login
-export const loginUser = (data) => API.post("/users/login", data);
+// 🔸 Login user
+export const loginUser = (userData) => API.post("/users/login", userData);
 
-// 📦 Get products
+// =================== PRODUCT APIs =================== //
+
+// 🔸 Fetch all products (protected)
 export const getProducts = () => API.get("/products");
+
+// 🔸 Add new product (admin only)
+export const addProduct = (productData) => API.post("/products", productData);
+
+// 🔸 Delete product
+export const deleteProduct = (id) => API.delete(`/products/${id}`);
 
 export default API;

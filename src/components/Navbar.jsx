@@ -1,37 +1,58 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = ({ cartCount }) => {
   const navigate = useNavigate();
 
-  // Check login status
-  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-  const username = localStorage.getItem("username") || "User";
+  // 🔹 Use state instead of reading only once
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") === "true"
+  );
+  const [username, setUsername] = useState(localStorage.getItem("username") || "User");
 
-  // Handle logout
+  // 🔁 Update UI when user logs in/out
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+      setUsername(localStorage.getItem("username") || "User");
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, []);
+
+ 
+  // 🚪 Logout
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("username");
     localStorage.removeItem("role");
-    navigate("/login"); // Redirect after logout
+    localStorage.removeItem("token");
+    navigate("/login");
+    window.location.reload(); // immediate UI update
   };
 
   return (
     <nav className="bg-primary text-white py-4 shadow-md">
       <div className="container mx-auto flex justify-between items-center px-4">
-
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold hover:opacity-90 transition">
           🩺 Medical Store
         </Link>
 
-        {/* Navigation + User Links */}
+        {/* Navigation */}
         <div className="flex gap-6 text-lg items-center">
-          <Link to="/" className="hover:text-gray-200 transition">Home</Link>
-          <Link to="/products" className="hover:text-gray-200 transition">Products</Link>
+          <Link to="/" className="hover:text-gray-200 transition">
+            Home
+          </Link>
+          <Link to="/products" className="hover:text-gray-200 transition">
+            Products
+          </Link>
 
           {/* Cart */}
-          <Link to="/cart" className="relative flex items-center hover:text-gray-200 transition">
+          <Link
+            to="/cart"
+            className="relative flex items-center hover:text-gray-200 transition"
+          >
             🛒 Cart
             {cartCount > 0 && (
               <span className="absolute -top-2 -right-4 bg-white text-primary font-bold rounded-full px-2 text-sm shadow-sm animate-pulse">
@@ -40,7 +61,7 @@ const Navbar = ({ cartCount }) => {
             )}
           </Link>
 
-          {/* Auth logic */}
+          {/* Authentication Logic */}
           {!isLoggedIn ? (
             <>
               <Link to="/login" className="hover:text-gray-200 transition">
