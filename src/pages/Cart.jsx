@@ -8,7 +8,7 @@ export default function Cart({ cartItems, updateCartItem, removeItem, clearCart 
     0
   );
 
-  // Purchase button (💅 fixed - no alert!)
+  // Purchase action
   const handlePurchase = () => {
     if (cartItems.length === 0) {
       toast.info("🛒 Your cart is empty!", { autoClose: 1500 });
@@ -40,19 +40,19 @@ export default function Cart({ cartItems, updateCartItem, removeItem, clearCart 
       ) : (
         <>
           {cartItems.map((item) => (
-            <div key={item.id} style={styles.cartItem}>
+            <div key={item._id} style={styles.cartItem}>
               <div>
                 <h4>{item.name}</h4>
                 <p>${item.price}</p>
               </div>
 
               <div style={styles.actions}>
-                <button onClick={() => updateCartItem(item.id, -1)}>-</button>
+                <button onClick={() => updateCartItem(item._id, -1)}>-</button>
                 <span style={styles.qty}>{item.quantity}</span>
-                <button onClick={() => updateCartItem(item.id, 1)}>+</button>
+                <button onClick={() => updateCartItem(item._id, 1)}>+</button>
                 <button
                   style={styles.remove}
-                  onClick={() => removeItem(item.id)}
+                  onClick={() => removeItem(item._id)}
                 >
                   Remove
                 </button>

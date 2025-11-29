@@ -1,25 +1,49 @@
-import React, { useState } from "react";
-import products from "../data/products";
+import React, { useState, useEffect } from "react";
+import { getProducts } from "../services/api"; // Import API request
+import { toast } from "react-toastify";
 
 export default function Products({ addToCart }) {
+  const [products, setProducts] = useState([]); // Products from backend
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true); // To manage fetching
+  const [error, setError] = useState(null);
 
-  //  Add to cart (use parent addToCart properly)
+  // Fetch products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await getProducts(); // Call the API
+        setProducts(response.data); // Store data
+        setLoading(false);
+      } catch (err) {
+        setError("Failed to fetch products");
+        toast.error("❌ Failed to fetch products");
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const handleAdd = (product) => {
-  addToCart(product); // only call this
-};
+    addToCart(product); // Pass product to parent
+  };
 
-  // 🔎 Search filter
-  const filteredProducts = products.filter(
-    (product) =>
-      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filter products (search)
+  const filteredProducts = products.filter((product) =>
+    `${product.name} ${product.description}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
+
+  if (loading) return <p style={styles.loading}>Loading products...</p>;
+  if (error) return <p style={styles.error}>Error: {error}</p>;
 
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>🩺 Medical Products</h2>
 
+      {/* Search bar */}
       <input
         type="text"
         placeholder="Search products..."
@@ -34,7 +58,7 @@ export default function Products({ addToCart }) {
         ) : (
           filteredProducts.map((product) => (
             <div
-              key={product.id}
+              key={product._id}
               style={styles.card}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.02)")}
               onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -67,6 +91,8 @@ const styles = {
     border: "1px solid #ccc",
     marginBottom: "20px",
   },
+  loading: { textAlign: "center", fontSize: "18px", color: "orange" },
+  error: { textAlign: "center", fontSize: "18px", color: "red" },
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",

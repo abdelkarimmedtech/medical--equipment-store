@@ -9,11 +9,11 @@ import {
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Products from "./pages/products";
+import Products from "./pages/products"; // 🔹 Ensure uppercase P to match your folder
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import AdminDashboard from "./pages/AdminDashboard"; // 🆕 Import admin page
+import AdminDashboard from "./pages/AdminDashboard";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -25,7 +25,7 @@ const PrivateRoute = ({ children }) => {
 };
 
 function App() {
-  // Load cart from localStorage once at startup
+  // 🛍 Load cart from localStorage once at startup
   const [cart, setCart] = useState(() => {
     return JSON.parse(localStorage.getItem("cart")) || [];
   });
@@ -33,7 +33,7 @@ function App() {
   // Navbar counter
   const [cartCount, setCartCount] = useState(0);
 
-  // Keep localStorage + counter in sync whenever cart changes
+  // Sync cart with localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
     setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
@@ -42,33 +42,29 @@ function App() {
   // ➕ Add item to cart
   const addToCart = (product) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === product.id);
+      const existingItem = prevCart.find((item) => item._id === product._id); // 🔹 Use _id (MongoDB)
       let updatedCart;
 
       if (existingItem) {
         updatedCart = prevCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
+          item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
         );
       } else {
         updatedCart = [...prevCart, { ...product, quantity: 1 }];
       }
 
-      // Instant navbar update
       setCartCount(updatedCart.reduce((sum, item) => sum + item.quantity, 0));
-
       toast.success(`${product.name} added to cart!`, { autoClose: 1500 });
       return updatedCart;
     });
   };
 
-  // 🆙 Update quantity in cart
+  // 🆙 Update cart quantity
   const updateCartItem = (id, change) => {
     setCart((prevCart) =>
       prevCart
         .map((item) =>
-          item.id === id
+          item._id === id
             ? { ...item, quantity: Math.max(1, item.quantity + change) }
             : item
         )
@@ -76,15 +72,13 @@ function App() {
     );
   };
 
-  // ❌ Remove item
+  // ❌ Remove item from cart
   const removeItem = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+    setCart((prevCart) => prevCart.filter((item) => item._id !== id));
   };
 
-  // 🧹 Clear cart on purchase
-  const clearCart = () => {
-    setCart([]);
-  };
+  // 🧹 Clear cart
+  const clearCart = () => setCart([]);
 
   return (
     <Router>
@@ -108,7 +102,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          {/* 🔐 Protected Admin Route */}
+          {/* 🔐 Admin route */}
           <Route
             path="/admin"
             element={
