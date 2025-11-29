@@ -51,23 +51,27 @@ const Navbar = ({ cartCount }) => {
         </button>
 
         <div className={`navbar-menu ${isMobileMenuOpen ? 'active' : ''}`}>
-          <Link to="/" className="navbar-link" onClick={() => setIsMobileMenuOpen(false)}>
-            Home
-          </Link>
-          <Link to="/products" className="navbar-link" onClick={() => setIsMobileMenuOpen(false)}>
-            Products
-          </Link>
+          <div className="navbar-nav-links">
+            <Link to="/" className="navbar-link" onClick={() => setIsMobileMenuOpen(false)}>
+              Home
+            </Link>
+            <Link to="/products" className="navbar-link" onClick={() => setIsMobileMenuOpen(false)}>
+              Products
+            </Link>
 
-          <Link
-            to="/cart"
-            className="navbar-link cart-link"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            <span>🛒 Cart</span>
-            {cartCount > 0 && (
-              <span className="cart-badge">{cartCount}</span>
+            {!isAdminPage && (
+              <Link
+                to="/cart"
+                className="navbar-link cart-link"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <span>🛒 Cart</span>
+                {cartCount > 0 && (
+                  <span className="cart-badge">{cartCount}</span>
+                )}
+              </Link>
             )}
-          </Link>
+          </div>
 
           <div className="navbar-auth">
             {!isLoggedIn ? (
@@ -97,22 +101,14 @@ const Navbar = ({ cartCount }) => {
                 {!isAdminPage && (
                   <div className="user-profile">
                     <span className="user-name">👤 {username}</span>
-                    <button
-                      onClick={handleLogout}
-                      className="navbar-btn navbar-btn-logout"
-                    >
-                      Logout
-                    </button>
                   </div>
                 )}
-                {isAdminPage && (
-                  <button
-                    onClick={handleLogout}
-                    className="navbar-btn navbar-btn-logout"
-                  >
-                    Logout
-                  </button>
-                )}
+                <button
+                  onClick={handleLogout}
+                  className="navbar-btn navbar-btn-logout"
+                >
+                  Logout
+                </button>
               </>
             )}
           </div>
