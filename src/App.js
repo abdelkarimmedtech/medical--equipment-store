@@ -82,7 +82,7 @@ function App() {
 
   return (
     <Router>
-      <Navbar cartCount={cartCount} />
+      <Navbar cartCount={cartCount} clearCart={clearCart} />
 
       <div className="p-5">
         <Routes>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./Navbar.css";
 
-const Navbar = ({ cartCount }) => {
+const Navbar = ({ cartCount, clearCart }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAdminPage = location.pathname === "/admin";
@@ -28,6 +28,8 @@ const Navbar = ({ cartCount }) => {
     localStorage.removeItem("username");
     localStorage.removeItem("role");
     localStorage.removeItem("token");
+    localStorage.removeItem("cart");
+    clearCart();
     setIsMobileMenuOpen(false);
     navigate("/login");
     window.location.reload();
