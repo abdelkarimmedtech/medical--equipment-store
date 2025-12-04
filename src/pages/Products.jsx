@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getProducts } from "../services/api";
 import { toast } from "react-toastify";
 import "./Products.css";
 
 export default function Products({ addToCart }) {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -27,6 +29,12 @@ export default function Products({ addToCart }) {
   }, []);
 
   const handleAdd = (product) => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (!isLoggedIn) {
+      toast.warning("Please log in to add items to cart", { autoClose: 1500 });
+      navigate("/login");
+      return;
+    }
     addToCart(product);
   };
 
