@@ -4,9 +4,11 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import AdminNavbar from "./components/AdminNavbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import Products from "./pages/products"; // 🔹 Ensure uppercase P to match your folder
@@ -23,6 +25,18 @@ import { reduceStock, increaseStock } from "./services/api";
 const PrivateRoute = ({ children }) => {
   const isAdmin = localStorage.getItem("role") === "admin";
   return isAdmin ? children : <Navigate to="/login" replace />;
+};
+
+// 🧭 Navbar wrapper to show correct navbar based on route
+const NavbarWrapper = ({ cartCount, clearCart }) => {
+  const location = useLocation();
+  const isAdminPage = location.pathname === "/admin";
+
+  return isAdminPage ? (
+    <AdminNavbar clearCart={clearCart} />
+  ) : (
+    <Navbar cartCount={cartCount} clearCart={clearCart} />
+  );
 };
 
 function App() {
@@ -143,7 +157,7 @@ function App() {
 
   return (
     <Router>
-      <Navbar cartCount={cartCount} clearCart={clearCart} />
+      <NavbarWrapper cartCount={cartCount} clearCart={clearCart} />
 
       <div className="p-5">
         <Routes>
