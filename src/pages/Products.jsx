@@ -12,30 +12,32 @@ export default function Products({ addToCart }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await getProducts();
-        setProducts(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to fetch products");
-        toast.error("Failed to fetch products");
-        setLoading(false);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      const response = await getProducts();
+      setProducts(response.data);
+      setLoading(false);
+    } catch (err) {
+      setError("Failed to fetch products");
+      toast.error("Failed to fetch products");
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchProducts();
   }, []);
 
-  const handleAdd = (product) => {
+  const handleAdd = async (product) => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     if (!isLoggedIn) {
       toast.warning("Please log in to add items to cart", { autoClose: 1500 });
       navigate("/login");
       return;
     }
-    addToCart(product);
+    await addToCart(product);
+    // Refresh products to get updated stock
+    setTimeout(() => fetchProducts(), 500);
   };
 
   const filteredProducts = products.filter((product) => {
@@ -125,7 +127,7 @@ export default function Products({ addToCart }) {
                     onClick={() => handleAdd(product)}
                     disabled={product.stock === 0}
                   >
-                    Add to Cart
+                    {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
                   </button>
                 </div>
               </div>

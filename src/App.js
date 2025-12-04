@@ -17,6 +17,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { reduceStock, increaseStock } from "./services/api";
 
 // 🛡️ Protect admin route
 const PrivateRoute = ({ children }) => {
@@ -39,46 +40,106 @@ function App() {
     setCartCount(cart.reduce((sum, item) => sum + item.quantity, 0));
   }, [cart]);
 
-  // ➕ Add item to cart
-  const addToCart = (product) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item._id === product._id); // 🔹 Use _id (MongoDB)
-      let updatedCart;
-
-      if (existingItem) {
-        updatedCart = prevCart.map((item) =>
-          item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item
-        );
-      } else {
-        updatedCart = [...prevCart, { ...product, quantity: 1 }];
+  // ➕ Add item to cart with stock reduction
+  const addToCart = async (product) => {
+    try {
+      // Check if product has _id (from backend) or id (from local data)
+      const productId = product._id || product.id;
+      
+      if (!productId) {
+        toast.error("Error: Product ID not found", { autoClose: 1500 });
+        return;
       }
 
-      setCartCount(updatedCart.reduce((sum, item) => sum + item.quantity, 0));
-      toast.success(`${product.name} added to cart!`, { autoClose: 1500 });
-      return updatedCart;
-    });
+      // Reduce stock from backend
+      await reduceStock(productId, 1);
+
+      setCart((prevCart) => {
+        const existingItem = prevCart.find((item) => item._id === productId);
+        let updatedCart;
+
+        if (existingItem) {
+          updatedCart = prevCart.map((item) =>
+            item._id === productId ? { ...item, quantity: item.quantity + 1 } : item
+          );
+        } else {
+          updatedCart = [...prevCart, { ...product, quantity: 1, _id: productId }];
+        }
+
+        setCartCount(updatedCart.reduce((sum, item) => sum + item.quantity, 0));
+        toast.success(`${product.name} added to cart!`, { autoClose: 1500 });
+        return updatedCart;
+      });
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      if (error.response && error.response.status === 400) {
+        toast.error("❌ Sorry, we don't have the stock is empty", { autoClose: 2000 });
+      } else {
+        toast.error("Error adding to cart: " + (error.message || "Unknown error"), { autoClose: 1500 });
+      }
+    }
   };
 
-  // 🆙 Update cart quantity
-  const updateCartItem = (id, change) => {
-    setCart((prevCart) =>
-      prevCart
-        .map((item) =>
-          item._id === id
-            ? { ...item, quantity: Math.max(1, item.quantity + change) }
-            : item
-        )
-        .filter((item) => item.quantity > 0)
-    );
+  // 🆙 Update cart quantity with stock sync
+  const updateCartItem = async (id, change) => {
+    try {
+      if (change > 0) {
+        // Increasing quantity - reduce stock
+        await reduceStock(id, 1);
+      } else if (change < 0) {
+        // Decreasing quantity - increase stock
+        await increaseStock(id, 1);
+      }
+
+      setCart((prevCart) =>
+        prevCart
+          .map((item) =>
+            item._id === id
+              ? { ...item, quantity: Math.max(1, item.quantity + change) }
+              : item
+          )
+          .filter((item) => item.quantity > 0)
+      );
+    } catch (error) {
+      console.error("Update cart error:", error);
+      toast.error("Error updating cart: " + (error.message || "Unknown error"), { autoClose: 1500 });
+    }
   };
 
-  // ❌ Remove item from cart
-  const removeItem = (id) => {
-    setCart((prevCart) => prevCart.filter((item) => item._id !== id));
+  // ❌ Remove item from cart with stock restoration
+  const removeItem = async (id) => {
+    try {
+      const item = cart.find((item) => item._id === id);
+      if (item) {
+        // Restore stock for removed items (user changed mind)
+        await increaseStock(id, item.quantity);
+      }
+      setCart((prevCart) => prevCart.filter((item) => item._id !== id));
+    } catch (error) {
+      console.error("Remove item error:", error);
+      toast.error("Error removing item: " + (error.message || "Unknown error"), { autoClose: 1500 });
+    }
   };
 
-  // 🧹 Clear cart
-  const clearCart = () => setCart([]);
+  // 🧹 Clear cart - for removing items (restores stock)
+  const clearCart = async () => {
+    try {
+      // Restore all item quantities back to stock
+      for (const item of cart) {
+        await increaseStock(item._id, item.quantity);
+      }
+      setCart([]);
+    } catch (error) {
+      // Still clear cart even if stock update fails
+      setCart([]);
+    }
+  };
+
+  // 🛒 Complete purchase - cart cleared WITHOUT stock restoration (permanent purchase)
+  const completePurchase = () => {
+    // Just clear the cart - stock reduction is PERMANENT
+    setCart([]);
+  };
 
   return (
     <Router>
@@ -96,6 +157,7 @@ function App() {
                 updateCartItem={updateCartItem}
                 removeItem={removeItem}
                 clearCart={clearCart}
+                completePurchase={completePurchase}
               />
             }
           />

@@ -34,4 +34,10 @@ export const updateProduct = (id, productData) => API.put(`/products/${id}`, pro
 // 🔸 Delete product
 export const deleteProduct = (id) => API.delete(`/products/${id}`);
 
+// 🔸 Reduce stock when adding to cart
+export const reduceStock = (id, quantity) => API.patch(`/products/${id}/reduce-stock`, { quantity });
+
+// 🔸 Increase stock when removing from cart
+export const increaseStock = (id, quantity) => API.patch(`/products/${id}/increase-stock`, { quantity });
+
 export default API;
