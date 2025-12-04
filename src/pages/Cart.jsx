@@ -1,5 +1,7 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import "./Cart.css";
 
 export default function Cart({ cartItems, updateCartItem, removeItem, clearCart, completePurchase }) {
   // Total price calculation
@@ -33,79 +35,119 @@ export default function Cart({ cartItems, updateCartItem, removeItem, clearCart,
   };
 
   return (
-    <div style={{ padding: "20px", maxWidth: "600px", margin: "auto" }}>
-      <h2 style={{ marginBottom: "20px" }}>🛒 Your Cart</h2>
+    <div className="cart-container">
+      <div className="cart-header">
+        <h1>🛒 Shopping Cart</h1>
+        <p className="cart-subtitle">Review and manage your items</p>
+      </div>
 
       {cartItems.length === 0 ? (
-        <p>Your cart is empty</p>
+        <div className="cart-empty">
+          <div className="empty-icon">📦</div>
+          <h2>Your Cart is Empty</h2>
+          <p>Add some medical equipment to get started!</p>
+          <Link to="/products" className="btn-continue-shopping">
+            Continue Shopping
+          </Link>
+        </div>
       ) : (
-        <>
-          {cartItems.map((item) => (
-            <div key={item._id} style={styles.cartItem}>
-              <div>
-                <h4>{item.name}</h4>
-                <p>TND {item.price}</p>
-              </div>
+        <div className="cart-content">
+          <div className="cart-items-section">
+            <div className="items-header">
+              <span>{cartItems.length} Item(s)</span>
+            </div>
 
-              <div style={styles.actions}>
-                <button onClick={() => updateCartItem(item._id, -1)}>-</button>
-                <span style={styles.qty}>{item.quantity}</span>
-                <button onClick={() => updateCartItem(item._id, 1)}>+</button>
+            {cartItems.map((item) => (
+              <div key={item._id} className="cart-item">
+                <div className="item-image">
+                  <img src={item.image || "https://via.placeholder.com/100"} alt={item.name} />
+                </div>
+
+                <div className="item-details">
+                  <h3 className="item-name">{item.name}</h3>
+                  <p className="item-description">{item.description}</p>
+                  <p className="item-category">📌 {item.category}</p>
+                </div>
+
+                <div className="item-price">
+                  <p className="price-label">Unit Price</p>
+                  <p className="price">TND {item.price.toFixed(2)}</p>
+                </div>
+
+                <div className="item-quantity">
+                  <button 
+                    className="qty-btn"
+                    onClick={() => updateCartItem(item._id, -1)}
+                    title="Decrease quantity"
+                  >
+                    −
+                  </button>
+                  <span className="qty-value">{item.quantity}</span>
+                  <button 
+                    className="qty-btn"
+                    onClick={() => updateCartItem(item._id, 1)}
+                    title="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <div className="item-subtotal">
+                  <p className="subtotal-label">Subtotal</p>
+                  <p className="subtotal">TND {(item.price * item.quantity).toFixed(2)}</p>
+                </div>
+
                 <button
-                  style={styles.remove}
+                  className="btn-remove"
                   onClick={() => removeItem(item._id)}
+                  title="Remove from cart"
                 >
-                  Remove
+                  🗑️
                 </button>
               </div>
+            ))}
+          </div>
+
+          <div className="cart-summary">
+            <div className="summary-box">
+              <h3>Order Summary</h3>
+
+              <div className="summary-row">
+                <span>Subtotal</span>
+                <span>TND {total.toFixed(2)}</span>
+              </div>
+
+              <div className="summary-row">
+                <span>Shipping</span>
+                <span className="shipping-free">Free</span>
+              </div>
+
+              <div className="summary-row">
+                <span>Tax</span>
+                <span>TND {(total * 0.19).toFixed(2)}</span>
+              </div>
+
+              <div className="summary-divider"></div>
+
+              <div className="summary-total">
+                <span>Total Amount</span>
+                <span>TND {(total + total * 0.19).toFixed(2)}</span>
+              </div>
+
+              <button 
+                className="btn-purchase"
+                onClick={handlePurchase}
+              >
+                ✓ Complete Purchase
+              </button>
+
+              <Link to="/products" className="btn-continue-shopping">
+                Continue Shopping
+              </Link>
             </div>
-          ))}
-
-          <h3 style={{ marginTop: "20px" }}>💵 Total: TND {total.toFixed(2)}</h3>
-
-          <button style={styles.purchase} onClick={handlePurchase}>
-            ✔ Purchase
-          </button>
-        </>
+          </div>
+        </div>
       )}
     </div>
   );
 }
-
-// 😊 Styles
-const styles = {
-  cartItem: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    background: "white",
-    padding: "15px",
-    borderRadius: "8px",
-    marginBottom: "10px",
-    boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
-  },
-  actions: { display: "flex", gap: "10px", alignItems: "center" },
-  qty: {
-    padding: "5px 10px",
-    border: "1px solid #ddd",
-    borderRadius: "5px",
-  },
-  remove: {
-    background: "red",
-    color: "white",
-    border: "none",
-    padding: "5px 10px",
-    borderRadius: "5px",
-    cursor: "pointer",
-  },
-  purchase: {
-    marginTop: "20px",
-    background: "green",
-    color: "white",
-    border: "none",
-    padding: "10px 20px",
-    borderRadius: "8px",
-    cursor: "pointer",
-    fontSize: "16px",
-  },
-};
