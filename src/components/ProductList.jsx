@@ -9,11 +9,11 @@ import ProductCard from "./ProductCard";
 export default function Products() {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // 🔹 Function to add product to cart & save in localStorage
+  
   const addToCart = (product) => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    // Check if product already exists
+    
     const existing = cart.find((item) => item.id === product.id);
 
     if (existing) {
@@ -30,7 +30,7 @@ export default function Products() {
     alert("🛒 Product added to cart!");
   };
 
-  // Filter based on search input
+  
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.description.toLowerCase().includes(searchTerm.toLowerCase())

@@ -9,11 +9,10 @@ import { toast } from "react-toastify";
 import "./AdminDashboard.css";
 
 export default function AdminDashboard() {
-  // State for products
   const [products, setProducts] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
-  // State for adding new product
+  
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
@@ -23,11 +22,11 @@ export default function AdminDashboard() {
     category: "Other",
   });
 
-  // Editing states
+  
   const [editingProduct, setEditingProduct] = useState(null);
   const [editData, setEditData] = useState({});
 
-  // Fetch products from DB
+  
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -41,7 +40,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // Add new product
+  
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
@@ -62,13 +61,13 @@ export default function AdminDashboard() {
     }
   };
 
-  // Start editing
+  
   const startEditing = (product) => {
     setEditingProduct(product);
     setEditData(product);
   };
 
-  // Submit edit
+  
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -81,14 +80,14 @@ export default function AdminDashboard() {
     }
   };
 
-  // Confirm delete
+  
   const confirmDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {
       handleDelete(id);
     }
   };
 
-  // Delete product
+  
   const handleDelete = async (id) => {
     try {
       await deleteProduct(id);

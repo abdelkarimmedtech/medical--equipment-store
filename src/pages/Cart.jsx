@@ -4,13 +4,12 @@ import { toast } from "react-toastify";
 import "./Cart.css";
 
 export default function Cart({ cartItems, updateCartItem, removeItem, clearCart, completePurchase }) {
-  // Total price calculation
+  
   const total = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
 
-  // Purchase action - this is FINAL, stock should NOT be restored
   const handlePurchase = () => {
     if (cartItems.length === 0) {
       toast.info("🛒 Your cart is empty!", { autoClose: 1500 });
@@ -30,7 +29,7 @@ export default function Cart({ cartItems, updateCartItem, removeItem, clearCart,
       },
     });
 
-    // Complete purchase - stock remains reduced (permanent transaction)
+    
     completePurchase();
   };
 

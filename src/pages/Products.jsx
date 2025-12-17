@@ -36,7 +36,7 @@ export default function Products({ addToCart }) {
       return;
     }
     await addToCart(product);
-    // Refresh products to get updated stock
+    
     setTimeout(() => fetchProducts(), 500);
   };
 

@@ -15,7 +15,7 @@ const Login = () => {
       const response = await loginUser({ email, password });
       
 
-      // Save token & user info
+      
       localStorage.setItem("token", response.data.token);
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("username", response.data.user.name || "User");
@@ -23,7 +23,7 @@ const Login = () => {
 
       toast.success("🎉 Login successful!", { autoClose: 1500 });
 
-      // 🎯 Redirect based on role
+      
       if (response.data.user.role === "admin") {
         navigate("/admin");
       } else {
