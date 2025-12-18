@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // Backend server URL
+  baseURL: "https://backend-medical-equipment-1.onrender.com/api", // Backend server URL
 });
 
 // 🔹 Automatically attach token to every request if logged in
