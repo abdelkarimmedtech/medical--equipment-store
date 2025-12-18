@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getProducts } from "../services/api";
 import { toast } from "react-toastify";
-import "./products.css";
+import "./Products.css";
 
 export default function Products({ addToCart }) {
   const navigate = useNavigate();
