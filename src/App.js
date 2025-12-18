@@ -11,7 +11,7 @@ import Navbar from "./components/Navbar";
 import AdminNavbar from "./components/AdminNavbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Products from "./pages/products"; 
+import Products from "../src/pages/Products"; 
 import Cart from "./pages/Cart";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
